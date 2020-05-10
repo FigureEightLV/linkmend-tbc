@@ -4,7 +4,7 @@ local function LocalizeItemLink(msg)
 	local link = id and select(2, GetItemInfo(id))
 
 	if link then
-		msg = link
+		msg = gsub(msg, "|c(%x+)|Hitem:([%d-]-:[%d-]-:[%d-]-:[%d-]-:[%d-]-:[%d-]-:[%d-]-:[%d-]-)|h%[(.-)%]|h|r", link)
 	end
 
 	return msg
@@ -15,7 +15,7 @@ local function LocalizeSpellLink(msg)
 	local link = id and GetSpellLink(id)
 
 	if link then
-		msg = link
+		msg = gsub(msg, "|c(%x+)|Hspell:([%d-]-)|h%[(.-)%]|h|r", link)
 	end
 
 	return msg
@@ -24,9 +24,10 @@ end
 local function LocalizeEnchantLink(msg)
 	local id = select(3, strfind(msg, "enchant:(%d+)"))
 	local name = id and GetSpellInfo(id)
+	local link = name and format("|cffffd100|Henchant:%s|h[%s]|h|r", id, name)
 
-	if name then
-		msg = format("|cffffd100|Henchant:%s|h[%s]|h|r", id, name)
+	if link then
+		msg = gsub(msg, "|c(%x+)|Henchant:([%d-]-)|h%[(.-)%]|h|r", link)
 	end
 
 	return msg
