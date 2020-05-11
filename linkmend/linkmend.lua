@@ -1,36 +1,31 @@
 -- Link localization functions
 local function LocalizeItemLink(msg)
-	local id = select(3, strfind(msg, "item:(%d+)"))
-	local link = id and select(2, GetItemInfo(id))
-
-	if link then
-		msg = gsub(msg, "|c(%x+)|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*)[:0-9]*|h([^}]-)|h|r", link)
-	end
-
-	return msg
+	return gsub(msg, "|c(%x+)|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*)[:0-9]*|h%[(.-)%]|h|r", function(color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, name)
+		local cachedName, _, quality = GetItemInfo(format("item:%s:0:0:0:0:0:%s", itemId, suffixId))
+		if not cachedName then
+			cachedName, _, quality = GetItemInfo(itemId)
+		end
+		if cachedName then
+			local color = strsub(({GetItemQualityColor(quality)})[4], 3)
+			return format("|c%s|Hitem:%s:%s:%s:%s:%s:%s:%s:%s|h[%s]|h|r", color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, cachedName)
+		else
+			return format("|c%s|Hitem:%s:%s:%s:%s:%s:%s:%s:%s|h[%s]|h|r", color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, name)
+		end
+	end)
 end
 
 local function LocalizeSpellLink(msg)
-	local id = select(3, strfind(msg, "spell:(%d+)"))
-	local link = id and GetSpellLink(id)
-
-	if link then
-		msg = gsub(msg, "|c(%x+)|Hspell:([%d-]-)|h([^}]-)|h|r", link)
-	end
-
-	return msg
+	return gsub(msg, "|c(%x+)|Hspell:(%d*)[:0-9]*|h%[(.-)%]|h|r", function(color, spellId, name)
+		local link = GetSpellLink(spellId)
+		return link or format("|c%s|Hspell:%s|h[%s]|h|r", color, spellId, name)
+	end)
 end
 
 local function LocalizeEnchantLink(msg)
-	local id = select(3, strfind(msg, "enchant:(%d+)"))
-	local name = id and GetSpellInfo(id)
-	local link = name and format("|cffffd100|Henchant:%s|h[%s]|h|r", id, name)
-
-	if link then
-		msg = gsub(msg, "|c(%x+)|Henchant:([%d-]-)|h([^}]-)|h|r", link)
-	end
-
-	return msg
+	return gsub(msg, "|c(%x+)|Henchant:(%d*)[:0-9]*|h%[(.-)%]|h|r", function(color, spellId, name)
+		name = GetSpellInfo(spellId) or name
+		return format("|c%s|Henchant:%s|h[%s]|h|r", "ffffd100", spellId, name)
+	end)
 end
 
 -- CLINK removal borrowed from pfUI/modules/chat.lua by shagu
