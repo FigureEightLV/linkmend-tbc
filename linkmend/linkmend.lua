@@ -28,6 +28,16 @@ local function LocalizeEnchantLink(msg)
 	end)
 end
 
+local pfQuest = (IsAddOnLoaded("pfQuest") or IsAddOnLoaded("pfQuest-tbc")) and pfDB["quests"][GetLocale()]
+
+local function LocalizeQuestLink(msg)
+	return gsub(msg, "|c(%x+)|Hquest:(%d*):(%d*)[:0-9]*|h%[(.-)%]|h|r", function(color, questId, questLevel, name)
+		questId = tonumber(questId)
+		name = pfQuest[questId] and pfQuest[questId]["T"] or name
+		return format("|c%s|Hquest:%s:%s|h[%s]|h|r", color, questId, questLevel, name)
+	end)
+end
+
 -- CLINK removal borrowed from pfUI/modules/chat.lua by shagu
 for i = 1, NUM_CHAT_WINDOWS do
 	if not _G["ChatFrame"..i].HookAddMessageForLinkmend then
@@ -50,6 +60,8 @@ for i = 1, NUM_CHAT_WINDOWS do
 					msg = LocalizeSpellLink(msg)
 				elseif strfind(msg, "|Henchant:(.-)|h") then
 					msg = LocalizeEnchantLink(msg)
+				elseif pfQuest and strfind(msg, "|Hquest:(.-)|h") then
+					msg = LocalizeQuestLink(msg)
 				end
 
 				_G["ChatFrame"..i].HookAddMessageForLinkmend(frame, msg, a1, a2, a3, a4, a5)

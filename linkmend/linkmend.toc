@@ -2,5 +2,7 @@
 ## Author: FigureEight
 ## Title: linkmend TBC
 ## Notes: Fixes CLINKs and foreign language links. Inspired by the original linkmend from shirsig.
-## Version: 1.03
+## Version: 1.04
+## OptionalDeps: pfQuest, pfQuest-tbc
+
 linkmend.lua
