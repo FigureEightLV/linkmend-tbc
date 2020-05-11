@@ -1,14 +1,11 @@
 -- Link localization functions
 local function LocalizeItemLink(msg)
 	return gsub(msg, "|c(%x+)|Hitem:(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*):(%d*)[:0-9]*|h%[(.-)%]|h|r", function(color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, name)
-		local cachedName, _, quality = GetItemInfo(format("item:%s:0:0:0:0:0:%s", itemId, suffixId))
-		if not cachedName then
-			cachedName, _, quality = GetItemInfo(itemId)
-		end
-		if cachedName then
-			local color = strsub(({GetItemQualityColor(quality)})[4], 3)
-			return format("|c%s|Hitem:%s:%s:%s:%s:%s:%s:%s:%s|h[%s]|h|r", color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, cachedName)
+		if suffixId == "0" then
+			name = GetItemInfo(itemId) or name
+			return link or format("|c%s|Hitem:%s:%s:%s:%s:%s:%s:%s:%s|h[%s]|h|r", color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, name)
 		else
+			name = GetItemInfo(format("item:%s:0:0:0:0:0:%s", itemId, suffixId)) or name
 			return format("|c%s|Hitem:%s:%s:%s:%s:%s:%s:%s:%s|h[%s]|h|r", color, itemId, enchantId, jewelId1, jewelId2, jewelId3, jewelId4, suffixId, uniqueId, name)
 		end
 	end)
